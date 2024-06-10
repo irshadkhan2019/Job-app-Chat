@@ -1,7 +1,7 @@
 {
   "name": "job-chat-service",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "start": "pm2 start ./build/src/app.js -i 2 --attach --watch | pino-pretty -c",
     "stop": "pm2 stop all",
@@ -16,7 +16,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "@elastic/elasticsearch": "^8.13.1",
     "@irshadkhan2019/job-app-shared": "^1.1.3",
@@ -36,6 +35,7 @@
     "mongoose": "^8.4.1",
     "pino-pretty": "^11.1.0",
     "redis": "^4.6.14",
+    "socket.io": "^4.7.5",
     "typescript": "^5.4.5",
     "typescript-transform-paths": "^3.4.7",
     "winston": "^3.13.0"
@@ -62,5 +62,6 @@
     "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.10",
     "tsconfig-paths": "^4.2.0"
-  }
+  },
+  "description": ""
 }

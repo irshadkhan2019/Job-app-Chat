@@ -13,11 +13,14 @@ import compression from 'compression';
 import { checkConnection } from '@chat/elasticsearch';
 import { appRoutes } from '@chat/routes';
 import { Channel } from 'amqplib';
+import { Server } from 'socket.io';
+import { createConnection } from './queues/connection';
 
 
 const SERVER_PORT = 4005;
 const log: Logger = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'chatServer', 'debug');
 let chatChannel: Channel;
+let socketIOChatObject: Server;
 
 
 const start = (app: Application): void => {
@@ -62,7 +65,7 @@ const routesMiddleware = (app: Application): void => {
 };
 
 const startQueues = async (): Promise<void> => {
-
+  chatChannel= await createConnection() as Channel;
 };
 
 const startElasticSearch = (): void => {
@@ -82,7 +85,9 @@ const chatErrorHandler = (app: Application): void => {
 const startServer = async (app: Application): Promise<void> => {
   try {
     const httpServer: http.Server = new http.Server(app);
+    const socketIO: Server = await createSocketIO(httpServer);
     startHttpServer(httpServer);
+    socketIOChatObject = socketIO;
   
   } catch (error) {
     log.log('error', 'ChatService startServer() method error:', error);
@@ -101,4 +106,14 @@ const startHttpServer = (httpServer: http.Server): void => {
   }
 };
 
-export { start, chatChannel };
+const createSocketIO = async (httpServer: http.Server): Promise<Server> => {
+  const io: Server = new Server(httpServer, {
+    cors: {
+      origin: '*',
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+    }
+  });
+  return io;
+};
+
+export { start, chatChannel,socketIOChatObject };
